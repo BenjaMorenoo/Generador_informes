@@ -156,6 +156,7 @@ export interface Metadata {
   aprobadoPor: string;
   fechaUltimaAprobacion: string;
   historialRevisiones: FilaHistorial[];
+  estiloHistorial: EstiloTabla;
 }
 
 export interface DocumentoAcademico {

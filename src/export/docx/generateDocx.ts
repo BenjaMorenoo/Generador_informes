@@ -105,6 +105,8 @@ async function fetchImageAsBuffer(url: string): Promise<{ data: Uint8Array; widt
   }
 }
 
+const hexToDocxColor = (hex: string) => hex.replace('#', '').toUpperCase().padEnd(6, '0');
+
 export async function generateDocx(doc: DocumentoAcademico): Promise<Blob> {
   const { metadata, config, secciones, referencias } = doc;
   const { fuente, tamano, margenes, interlineado } = config;
@@ -202,6 +204,17 @@ export async function generateDocx(doc: DocumentoAcademico): Promise<Blob> {
   });
 
   // ── HISTORIAL ──
+  const eh = metadata.estiloHistorial;
+  const makeHistBorder = () => {
+    const b = { style: BorderStyle.SINGLE, size: 4, color: hexToDocxColor(eh.colorBorde) };
+    const none = { style: BorderStyle.NONE, size: 0, color: 'auto' };
+    if (eh.tiposBorde === 'todos') return { top: b, bottom: b, left: b, right: b };
+    if (eh.tiposBorde === 'horizontales') return { top: b, bottom: b, left: none, right: none };
+    if (eh.tiposBorde === 'exterior') return { top: b, bottom: b, left: b, right: b };
+    return { top: none, bottom: none, left: none, right: none };
+  };
+  const histBorders = makeHistBorder();
+
   const historialTable =
     metadata.historialRevisiones.length > 0
       ? new Table({
@@ -212,9 +225,9 @@ export async function generateDocx(doc: DocumentoAcademico): Promise<Blob> {
               children: ['Fecha', 'Revisión', 'Autor', 'Modificación'].map(
                 (h) =>
                   new TableCell({
-                    shading: { type: ShadingType.SOLID, color: '1E40AF' },
-                    children: [new Paragraph({ children: [new TextRun({ text: h, bold: true, color: 'FFFFFF', font: fuente, size: half })] })],
-                    borders: { top: { style: BorderStyle.SINGLE, size: 1 }, bottom: { style: BorderStyle.SINGLE, size: 1 }, left: { style: BorderStyle.SINGLE, size: 1 }, right: { style: BorderStyle.SINGLE, size: 1 } },
+                    shading: { type: ShadingType.SOLID, color: hexToDocxColor(eh.colorEncabezado) },
+                    children: [new Paragraph({ children: [new TextRun({ text: h, bold: true, color: hexToDocxColor(eh.colorTextoEncabezado), font: fuente, size: half })] })],
+                    borders: histBorders,
                   })
               ),
             }),
@@ -229,9 +242,9 @@ export async function generateDocx(doc: DocumentoAcademico): Promise<Blob> {
                   ].map(
                     (val) =>
                       new TableCell({
-                        shading: { type: ShadingType.SOLID, color: idx % 2 === 0 ? 'F9FAFB' : 'FFFFFF' },
+                        shading: { type: ShadingType.SOLID, color: hexToDocxColor(idx % 2 === 0 ? eh.colorFilaImpar : eh.colorFilaPar) },
                         children: [new Paragraph({ children: [new TextRun({ text: val, font: fuente, size: half })] })],
-                        borders: { top: { style: BorderStyle.SINGLE, size: 1 }, bottom: { style: BorderStyle.SINGLE, size: 1 }, left: { style: BorderStyle.SINGLE, size: 1 }, right: { style: BorderStyle.SINGLE, size: 1 } },
+                        borders: histBorders,
                       })
                   ),
                 })
@@ -307,8 +320,6 @@ export async function generateDocx(doc: DocumentoAcademico): Promise<Blob> {
           spacing: { before: 200, after: 100 },
         })
       );
-
-      const hexToDocxColor = (hex: string) => hex.replace('#', '').toUpperCase().padEnd(6, '0');
 
       const makeDocxBorder = (color: string, tipo: string) => {
         if (tipo === 'ninguno') return { style: BorderStyle.NONE, size: 0, color: 'auto' };

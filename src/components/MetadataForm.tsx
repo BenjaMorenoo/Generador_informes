@@ -1,16 +1,44 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useDocumentStore } from '../store/documentStore';
 import { Input } from './ui/Input';
 import { Button } from './ui/Button';
-import { Trash2, Plus, GripVertical } from 'lucide-react';
+import { Trash2, Plus, GripVertical, ChevronDown, ChevronRight } from 'lucide-react';
 import { generarId } from '../utils/date';
-import { Integrante, FilaHistorial } from '../types';
+import { Integrante, FilaHistorial, EstiloTabla, PRESETS_TABLA } from '../types';
+
+const BORDER_OPTIONS: { value: EstiloTabla['tiposBorde']; label: string }[] = [
+  { value: 'todos', label: 'Todos' },
+  { value: 'horizontales', label: 'Horizontales' },
+  { value: 'exterior', label: 'Exterior' },
+  { value: 'ninguno', label: 'Sin bordes' },
+];
+
+function ColorField({ label, value, onChange }: { label: string; value: string; onChange: (v: string) => void }) {
+  return (
+    <div className="flex items-center gap-2">
+      <label className="text-xs text-gray-600 w-36 flex-shrink-0">{label}</label>
+      <div className="flex items-center gap-1.5">
+        <input type="color" value={value} onChange={(e) => onChange(e.target.value)}
+          className="w-7 h-7 rounded cursor-pointer border border-gray-300 p-0.5 bg-white" />
+        <input type="text" value={value} onChange={(e) => onChange(e.target.value)}
+          className="w-20 border border-gray-300 rounded px-1.5 py-0.5 text-xs font-mono" maxLength={7} />
+      </div>
+    </div>
+  );
+}
 
 export function MetadataForm() {
   const { documento, updateMetadata, addIntegrante, updateIntegrante, removeIntegrante,
     addHistorial, updateHistorial, removeHistorial } = useDocumentStore();
   const { metadata } = documento;
+  const [showDesign, setShowDesign] = useState(false);
+
+  const estilo = metadata.estiloHistorial ?? PRESETS_TABLA.azul;
+  const updateEstilo = (fields: Partial<EstiloTabla>) =>
+    updateMetadata({ estiloHistorial: { ...estilo, ...fields } });
+  const applyPreset = (key: keyof typeof PRESETS_TABLA) =>
+    updateMetadata({ estiloHistorial: PRESETS_TABLA[key] });
 
   const { register, watch, setValue } = useForm({ defaultValues: metadata });
 
@@ -179,6 +207,86 @@ export function MetadataForm() {
           ))}
           {metadata.historialRevisiones.length === 0 && (
             <p className="text-xs text-gray-400 italic">Sin historial. Haz clic en "Agregar".</p>
+          )}
+        </div>
+
+        {/* Panel de diseño de la tabla */}
+        <div className="mt-2 border border-gray-200 rounded-md overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setShowDesign(!showDesign)}
+            className="w-full flex items-center justify-between px-3 py-2 bg-gray-50 text-xs font-medium text-gray-600 hover:bg-gray-100"
+          >
+            <span className="flex items-center gap-1.5">
+              <span className="w-3 h-3 rounded-sm border border-gray-300 inline-block" style={{ background: estilo.colorEncabezado }} />
+              Diseño de la tabla
+            </span>
+            {showDesign ? <ChevronDown size={13} /> : <ChevronRight size={13} />}
+          </button>
+          {showDesign && (
+            <div className="p-3 space-y-4">
+              <div>
+                <p className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-2">Estilos predefinidos</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {(Object.entries(PRESETS_TABLA) as [keyof typeof PRESETS_TABLA, EstiloTabla][]).map(([key, preset]) => (
+                    <button key={key} type="button" onClick={() => applyPreset(key)}
+                      className="flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs border border-gray-200 hover:border-blue-400 hover:bg-blue-50 transition-colors">
+                      <span className="w-3 h-3 rounded-sm inline-block border border-gray-300" style={{ background: preset.colorEncabezado }} />
+                      {key.charAt(0).toUpperCase() + key.slice(1)}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-2">Colores</p>
+                <div className="space-y-2">
+                  <ColorField label="Fondo encabezado" value={estilo.colorEncabezado} onChange={(v) => updateEstilo({ colorEncabezado: v })} />
+                  <ColorField label="Texto encabezado" value={estilo.colorTextoEncabezado} onChange={(v) => updateEstilo({ colorTextoEncabezado: v })} />
+                  <ColorField label="Fila impar" value={estilo.colorFilaImpar} onChange={(v) => updateEstilo({ colorFilaImpar: v })} />
+                  <ColorField label="Fila par" value={estilo.colorFilaPar} onChange={(v) => updateEstilo({ colorFilaPar: v })} />
+                  <ColorField label="Bordes" value={estilo.colorBorde} onChange={(v) => updateEstilo({ colorBorde: v })} />
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-2">Tipo de borde</p>
+                <div className="flex flex-wrap gap-1">
+                  {BORDER_OPTIONS.map((opt) => (
+                    <button key={opt.value} type="button" onClick={() => updateEstilo({ tiposBorde: opt.value })}
+                      className={`text-xs px-2.5 py-1 rounded-md border transition-colors ${
+                        estilo.tiposBorde === opt.value
+                          ? 'bg-blue-600 text-white border-blue-600'
+                          : 'bg-white text-gray-600 border-gray-300 hover:border-blue-400'
+                      }`}>
+                      {opt.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <p className="text-xs font-medium text-gray-600 uppercase tracking-wide mb-1">Vista previa</p>
+                <div className="rounded overflow-hidden border" style={{ borderColor: estilo.colorBorde }}>
+                  <div className="flex">
+                    {['Fecha', 'Autor'].map((c, i) => (
+                      <div key={i} className="flex-1 text-xs font-bold px-2 py-1"
+                        style={{ background: estilo.colorEncabezado, color: estilo.colorTextoEncabezado, borderRight: i === 0 ? `1px solid ${estilo.colorBorde}` : undefined }}>
+                        {c}
+                      </div>
+                    ))}
+                  </div>
+                  {[0, 1].map((row) => (
+                    <div key={row} className="flex"
+                      style={{ background: row % 2 === 0 ? estilo.colorFilaImpar : estilo.colorFilaPar, borderTop: `1px solid ${estilo.colorBorde}` }}>
+                      {['2024-01-15', 'Equipo'].map((c, i) => (
+                        <div key={i} className="flex-1 text-xs px-2 py-1"
+                          style={{ borderRight: i === 0 ? `1px solid ${estilo.colorBorde}` : undefined }}>
+                          {c}
+                        </div>
+                      ))}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
           )}
         </div>
       </section>

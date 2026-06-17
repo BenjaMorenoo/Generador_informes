@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useDocumentStore } from '../store/documentStore';
-import { Seccion, Tabla, EstiloTabla } from '../types';
+import { Seccion, Tabla, EstiloTabla, PRESETS_TABLA } from '../types';
 import { formatFechaEspanol } from '../utils/date';
 import { formatAPA7, sortReferences } from '../utils/apa/formatCitation';
 
@@ -261,25 +261,37 @@ export function VistaPrevia() {
           <h1 style={{ fontWeight: 'bold', textTransform: 'uppercase', fontSize: `${config.tamano + 2}pt`, marginBottom: '0.5cm' }}>
             Historial de Revisiones
           </h1>
-          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: `${config.tamano}pt` }}>
-            <thead>
-              <tr style={{ background: '#1e40af', color: 'white' }}>
-                {['Fecha', 'Revisión', 'Autor', 'Modificación'].map((h) => (
-                  <th key={h} style={{ padding: '0.2cm 0.3cm', textAlign: 'left', border: '1px solid #1e3a8a' }}>{h}</th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {metadata.historialRevisiones.map((fila, idx) => (
-                <tr key={fila.id} style={{ background: idx % 2 === 0 ? '#f9fafb' : 'white' }}>
-                  <td style={{ padding: '0.2cm 0.3cm', border: '1px solid #d1d5db' }}>{formatFechaEspanol(fila.fecha)}</td>
-                  <td style={{ padding: '0.2cm 0.3cm', border: '1px solid #d1d5db' }}>{fila.revision}</td>
-                  <td style={{ padding: '0.2cm 0.3cm', border: '1px solid #d1d5db' }}>{fila.autor}</td>
-                  <td style={{ padding: '0.2cm 0.3cm', border: '1px solid #d1d5db' }}>{fila.modificacion}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {(() => {
+            const eh = metadata.estiloHistorial ?? PRESETS_TABLA.azul;
+            const borde = (side: 'top' | 'bottom' | 'left' | 'right'): string => {
+              const b = `1px solid ${eh.colorBorde}`;
+              if (eh.tiposBorde === 'todos') return b;
+              if (eh.tiposBorde === 'horizontales') return side === 'top' || side === 'bottom' ? b : 'none';
+              return 'none';
+            };
+            const outerBorder = eh.tiposBorde === 'exterior' || eh.tiposBorde === 'todos'
+              ? `1px solid ${eh.colorBorde}` : 'none';
+            return (
+              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: `${config.tamano}pt`, border: outerBorder }}>
+                <thead>
+                  <tr style={{ background: eh.colorEncabezado, color: eh.colorTextoEncabezado }}>
+                    {['Fecha', 'Revisión', 'Autor', 'Modificación'].map((h) => (
+                      <th key={h} style={{ padding: '0.2cm 0.3cm', textAlign: 'left', borderTop: borde('top'), borderBottom: borde('bottom'), borderLeft: borde('left'), borderRight: borde('right') }}>{h}</th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {metadata.historialRevisiones.map((fila, idx) => (
+                    <tr key={fila.id} style={{ background: idx % 2 === 0 ? eh.colorFilaImpar : eh.colorFilaPar }}>
+                      {[formatFechaEspanol(fila.fecha), fila.revision, fila.autor, fila.modificacion].map((val, ci) => (
+                        <td key={ci} style={{ padding: '0.2cm 0.3cm', borderTop: borde('top'), borderBottom: borde('bottom'), borderLeft: borde('left'), borderRight: borde('right') }}>{val}</td>
+                      ))}
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            );
+          })()}
         </div>
       )}
 

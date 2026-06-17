@@ -311,28 +311,34 @@ export async function generatePdf(doc: DocumentoAcademico): Promise<Blob> {
       </Page>
 
       {/* ── HISTORIAL ── */}
-      {metadata.historialRevisiones.length > 0 && (
-        <Page size="A4" style={styles.page}>
-          <View style={styles.divider} />
-          <Text style={styles.h1}>Historial de Revisiones</Text>
-          <View style={{ borderWidth: 1, borderColor: '#d1d5db' }}>
-            <View style={{ flexDirection: 'row' }}>
-              {['Fecha', 'Revisión', 'Autor', 'Modificación'].map((h) => (
-                <Text key={h} style={[styles.tableHeaderCell, { flex: h === 'Modificación' ? 2 : 1 }]}>{h}</Text>
+      {metadata.historialRevisiones.length > 0 && (() => {
+        const eh = metadata.estiloHistorial;
+        const showBorder = eh.tiposBorde !== 'ninguno';
+        const bw = showBorder ? 1 : 0;
+        const bc = eh.colorBorde;
+        return (
+          <Page size="A4" style={styles.page}>
+            <View style={styles.divider} />
+            <Text style={styles.h1}>Historial de Revisiones</Text>
+            <View style={{ borderWidth: eh.tiposBorde === 'exterior' || eh.tiposBorde === 'todos' ? 1 : 0, borderColor: bc }}>
+              <View style={{ flexDirection: 'row', backgroundColor: eh.colorEncabezado }}>
+                {['Fecha', 'Revisión', 'Autor', 'Modificación'].map((h) => (
+                  <Text key={h} style={{ flex: h === 'Modificación' ? 2 : 1, fontFamily: fonts.bold, fontSize: sz - 1, padding: 4, color: eh.colorTextoEncabezado, borderRightWidth: 1, borderRightColor: bc }}>{h}</Text>
+                ))}
+              </View>
+              {metadata.historialRevisiones.map((fila, idx) => (
+                <View key={fila.id} style={{ flexDirection: 'row', backgroundColor: idx % 2 === 0 ? eh.colorFilaImpar : eh.colorFilaPar, borderTopWidth: bw, borderTopColor: bc }}>
+                  <Text style={[styles.tableCellValue, { flex: 1 }]}>{formatFechaEspanol(fila.fecha)}</Text>
+                  <Text style={[styles.tableCellValue, { flex: 1 }]}>{fila.revision}</Text>
+                  <Text style={[styles.tableCellValue, { flex: 1 }]}>{fila.autor}</Text>
+                  <Text style={[styles.tableCellValue, { flex: 2 }]}>{fila.modificacion}</Text>
+                </View>
               ))}
             </View>
-            {metadata.historialRevisiones.map((fila, idx) => (
-              <View key={fila.id} style={idx % 2 === 0 ? styles.tableRowAlt0 : styles.tableRowAlt1}>
-                <Text style={[styles.tableCellValue, { flex: 1 }]}>{formatFechaEspanol(fila.fecha)}</Text>
-                <Text style={[styles.tableCellValue, { flex: 1 }]}>{fila.revision}</Text>
-                <Text style={[styles.tableCellValue, { flex: 1 }]}>{fila.autor}</Text>
-                <Text style={[styles.tableCellValue, { flex: 2 }]}>{fila.modificacion}</Text>
-              </View>
-            ))}
-          </View>
-          <Text style={styles.pageNumber} render={({ pageNumber }) => `${pageNumber}`} fixed />
-        </Page>
-      )}
+            <Text style={styles.pageNumber} render={({ pageNumber }) => `${pageNumber}`} fixed />
+          </Page>
+        );
+      })()}
 
       {/* ── ÍNDICE GENERAL ── */}
       <Page size="A4" style={styles.page}>

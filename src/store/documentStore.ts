@@ -9,6 +9,7 @@ import {
   Imagen,
   Tabla,
   ActivePanel,
+  EstiloTabla,
   PRESETS_TABLA,
 } from '../types';
 import { generarId } from '../utils/date';
@@ -32,6 +33,7 @@ const defaultDocumento: DocumentoAcademico = {
     aprobadoPor: '',
     fechaUltimaAprobacion: '',
     historialRevisiones: [],
+    estiloHistorial: PRESETS_TABLA.azul,
   },
   config: {
     fuente: 'Times New Roman',
@@ -279,6 +281,10 @@ export const useDocumentStore = create<DocumentStore>()(
           ...sec,
           tablas: sec.tablas ?? [],
         }));
+        const meta = state.documento.metadata as unknown as { estiloHistorial?: EstiloTabla };
+        if (!meta.estiloHistorial) {
+          state.documento.metadata.estiloHistorial = PRESETS_TABLA.azul;
+        }
       },
     }
   )
