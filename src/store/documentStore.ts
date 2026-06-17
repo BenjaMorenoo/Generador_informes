@@ -276,8 +276,8 @@ export const useDocumentStore = create<DocumentStore>()(
       onRehydrateStorage: () => (state) => {
         if (!state) return;
         state.documento.secciones = state.documento.secciones.map((sec) => ({
-          tablas: [],
           ...sec,
+          tablas: sec.tablas ?? [],
         }));
       },
     }

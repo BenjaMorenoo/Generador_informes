@@ -23,7 +23,7 @@ export function MetadataForm() {
 
   useEffect(() => {
     Object.keys(metadata).forEach((key) => {
-      setValue(key as keyof typeof metadata, (metadata as Record<string, unknown>)[key] as string);
+      setValue(key as keyof typeof metadata, (metadata as unknown as Record<string, unknown>)[key] as string);
     });
   }, []);
 
