@@ -65,7 +65,11 @@ function mapTabla(
 interface DocumentStore {
   documento: DocumentoAcademico;
   activePanel: ActivePanel;
+  documentoIniciado: boolean;
+  plantillaId: string;
   setActivePanel: (panel: ActivePanel) => void;
+  iniciarDocumento: (plantillaId: string, documento: DocumentoAcademico) => void;
+  volverInicio: () => void;
   updateMetadata: (fields: Partial<DocumentoAcademico['metadata']>) => void;
   updateConfig: (fields: Partial<DocumentoAcademico['config']>) => void;
   addIntegrante: (i: Integrante) => void;
@@ -105,8 +109,15 @@ export const useDocumentStore = create<DocumentStore>()(
     (set) => ({
       documento: defaultDocumento,
       activePanel: 'metadata',
+      documentoIniciado: false,
+      plantillaId: '',
 
       setActivePanel: (panel) => set({ activePanel: panel }),
+
+      iniciarDocumento: (plantillaId, documento) =>
+        set({ documentoIniciado: true, plantillaId, documento, activePanel: 'metadata' }),
+
+      volverInicio: () => set({ documentoIniciado: false }),
 
       updateMetadata: (fields) =>
         set((s) => ({ documento: { ...s.documento, metadata: { ...s.documento.metadata, ...fields } } })),
@@ -284,6 +295,14 @@ export const useDocumentStore = create<DocumentStore>()(
         const meta = state.documento.metadata as unknown as { estiloHistorial?: EstiloTabla };
         if (!meta.estiloHistorial) {
           state.documento.metadata.estiloHistorial = PRESETS_TABLA.azul;
+        }
+        // Usuarios con datos previos al sistema de plantillas → saltar bienvenida
+        const raw = state as unknown as { plantillaId?: string };
+        if (!raw.plantillaId) {
+          state.plantillaId = 'das';
+          state.documentoIniciado =
+            state.documento.metadata.proyecto !== '' ||
+            state.documento.secciones.length > 0;
         }
       },
     }

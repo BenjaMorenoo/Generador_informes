@@ -280,6 +280,42 @@ El estado se persiste automáticamente en `localStorage` bajo la clave `das-docu
 | Colaboración en tiempo real | ❌ No disponible |
 | Guardado en la nube | ❌ No disponible (solo `localStorage`) |
 
+---
+
+## Roadmap
+
+### v0.2 — Corto plazo
+
+| Feature | Descripción |
+|---|---|
+| Formato enriquecido | Negrita, cursiva y negrita+cursiva en el contenido de secciones (`**texto**`, `*texto*`) con mini toolbar B / I sobre el editor |
+| Deshacer / Rehacer | Historial de acciones para recuperar secciones, tablas o campos eliminados |
+| Numeración de páginas en vista previa | Páginas numeradas visibles en el panel HTML, no solo en los archivos exportados |
+| Tabla de identificación personalizable | Mismo sistema de colores y bordes que el historial de revisiones |
+| Buscador de secciones | Filtro rápido por título en el panel de secciones |
+
+### v0.3 — Mediano plazo
+
+| Feature | Descripción |
+|---|---|
+| Plantillas predefinidas | Esqueletos de documento para IEEE 1471, ISO/IEC 42010 y plantilla genérica |
+| Múltiples documentos | Lista de proyectos guardados en `localStorage` con opción de cambiar entre ellos |
+| Bloques de código | Syntax highlighting dentro del contenido de secciones |
+| Glosario y abreviaciones | Sección fija generada automáticamente antes de las referencias |
+| Soporte multi-idioma | Interfaz y documento generado en español / inglés |
+
+### v1.0 — Largo plazo
+
+| Feature | Descripción |
+|---|---|
+| Guardado en la nube | Backend o Firebase para persistir documentos entre dispositivos |
+| Colaboración en tiempo real | Edición simultánea entre múltiples usuarios vía WebSockets / CRDT |
+| Importar desde Word | Parsear un `.docx` existente y convertirlo al modelo de datos de la app |
+| Exportar a otros formatos | Markdown, LaTeX y HTML estático como destinos adicionales de exportación |
+| Modo oscuro | Tema oscuro para la interfaz del editor |
+
+---
+
 ### Limitaciones conocidas en Beta V0.1
 
 - El índice en el DOCX requiere actualizarse manualmente en Word (`Ctrl+A` → `F9`).
