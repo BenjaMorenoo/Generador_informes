@@ -1,9 +1,28 @@
-# Generador DAS — Documento de Arquitectura de Software
+# Generador de Informes
 ### Beta V0.1
 
 > **⚠ Esta es una versión beta.** La aplicación está en desarrollo activo. Algunas funciones pueden comportarse de manera inesperada o estar incompletas. Se recomienda revisar siempre el documento exportado antes de entregarlo.
 
-Aplicación web para generar informes académicos con formato **DAS (Documento de Arquitectura de Software)** de forma automatizada. El usuario solo completa los campos; la app genera la portada, el índice, la numeración, las referencias APA 7 y todos los saltos de página de forma automática.
+Aplicación web para generar informes académicos con formato profesional de forma automatizada. El usuario elige una **plantilla**, completa los campos y la app genera la portada, el índice, la numeración, las referencias y todos los saltos de página automáticamente. La vista previa se actualiza en tiempo real y el documento se exporta a **DOCX** o **PDF**.
+
+🔗 Repositorio: [github.com/BenjaMorenoo/Generador_informes](https://github.com/BenjaMorenoo/Generador_informes)
+
+---
+
+## Plantillas
+
+Al abrir la app aparece una **pantalla de bienvenida** donde se elige el tipo de informe. Todas comparten el mismo estilo de portada y el mismo motor de exportación; cambia la estructura de secciones precargada.
+
+| Plantilla | Descripción | Estado |
+|---|---|---|
+| **DAS** | Documento de Arquitectura de Software: portada, identificación del documento, historial de revisiones, índices y referencias APA 7 | ✅ Disponible |
+| **Evaluación de Proyectos** | Informe técnico de decisión de inversión (VAN, TIR, PRI). Trae la estructura de 10 secciones lista para completar | ✅ Disponible |
+| **Informe Técnico** | Reporte técnico según norma IEEE | 🔜 Próximamente |
+| **Laboratorio** | Informe de laboratorio (objetivo, hipótesis, procedimiento, resultados) | 🔜 Próximamente |
+| **Memoria de Título** | Documento académico formal para proyecto de título | 🔜 Próximamente |
+| **En Blanco** | Estructura completamente libre | 🔜 Próximamente |
+
+> Cada plantilla define qué páginas preliminares incluye. Por ejemplo, la página de **Identificación del Documento** es propia del DAS y se omite en el informe de Evaluación de Proyectos.
 
 ---
 
@@ -11,8 +30,8 @@ Aplicación web para generar informes académicos con formato **DAS (Documento d
 
 ### Edición
 - **Portada automática** — institución, logo, proyecto, entrega, asignatura, sección, profesor, integrantes y fecha en español
-- **Tabla de identificación del documento** — versión, responsables y fechas de revisión/aprobación
-- **Historial de revisiones** — tabla editable con fecha, versión, autor y descripción del cambio
+- **Identificación del documento** (opcional según plantilla) — versión, responsables y fechas de revisión/aprobación
+- **Historial de revisiones** — tabla editable con fecha, versión, autor y descripción del cambio, con **diseño personalizable** (colores y bordes)
 - **Secciones con jerarquía H1 / H2 / H3** — cada nivel se numera y estiliza de forma diferente (capítulo, sección, subsección)
 - **Drag-and-drop** para reordenar secciones
 - **Contenido con viñetas** — escribe `- ítem` para listas y `  - sub-ítem` para sub-listas
@@ -22,6 +41,7 @@ Aplicación web para generar informes académicos con formato **DAS (Documento d
 - **Configuración tipográfica** — fuente, tamaño, interlineado y márgenes configurables
 
 ### Diseño de tablas
+Aplica tanto a las tablas de cada sección como a la tabla de historial de revisiones:
 - 5 estilos predefinidos: Azul, Gris, Verde, Naranja, Minimalista
 - Colores completamente personalizables: fondo y texto del encabezado, filas pares/impares, bordes
 - 4 tipos de borde: todos, solo horizontales, solo exterior, sin bordes
@@ -29,13 +49,13 @@ Aplicación web para generar informes académicos con formato **DAS (Documento d
 
 ### Documentos generados automáticamente
 - Portada
-- Página de identificación del documento
-- Historial de revisiones
+- Página de identificación del documento *(opcional según plantilla)*
+- Historial de revisiones *(si tiene filas)*
 - Índice general (con puntos de relleno)
-- Índice de figuras
-- Índice de tablas
+- Índice de figuras *(si hay imágenes)*
+- Índice de tablas *(si hay tablas)*
 - Cuerpo del informe con capítulos, secciones y subsecciones
-- Lista de referencias en **formato APA 7** (sangría francesa, cursivas, orden alfabético)
+- Lista de referencias en **formato APA 7** *(si hay referencias)*
 
 ### Vista previa en vivo
 El panel derecho muestra el documento renderizado en HTML con los mismos estilos del informe final, actualizándose en tiempo real al editar cualquier campo.
@@ -46,21 +66,41 @@ El panel derecho muestra el documento renderizado en HTML con los mismos estilos
 | **DOCX** | Estilos nombrados Heading 1/2/3, tabla de contenido con `updateFields`, saltos de página entre capítulos, pie de página con número, colores de tablas |
 | **PDF** | Generado con `@react-pdf/renderer`, misma estructura que la vista previa, fuentes PDF integradas, numeración de páginas |
 
+### Páginas legales
+La app incluye **Términos y Condiciones** y **Política de Privacidad** accesibles desde el pie de la pantalla de bienvenida.
+
 ---
 
 ## Tecnologías
 
 | Librería | Uso |
 |---|---|
-| React 18 + Vite | Entorno de desarrollo y UI |
+| React 19 + Vite | Entorno de desarrollo y UI |
 | TypeScript | Tipado estático del modelo de datos |
+| React Router | Enrutamiento entre bienvenida, editor y páginas legales |
 | Tailwind CSS v4 | Estilos de la interfaz |
 | Zustand | Estado global del documento (persistido en `localStorage`) |
 | React Hook Form | Formularios de metadatos |
 | `@dnd-kit` | Drag-and-drop para reordenar secciones |
 | `docx` | Generación de archivos `.docx` |
 | `@react-pdf/renderer` | Generación de archivos `.pdf` |
+| `buffer` | Polyfill requerido por `@react-pdf/renderer` en el navegador |
 | `lucide-react` | Iconos |
+
+---
+
+## Rutas
+
+La navegación se gestiona con **React Router**:
+
+| Ruta | Vista |
+|---|---|
+| `/` | Pantalla de bienvenida (selección de plantilla) |
+| `/editor` | Editor + vista previa en vivo *(protegida: redirige a `/` si no hay plantilla activa)* |
+| `/terminos` | Términos y Condiciones |
+| `/privacidad` | Política de Privacidad |
+
+Cualquier otra ruta redirige a `/`.
 
 ---
 
@@ -69,39 +109,53 @@ El panel derecho muestra el documento renderizado en HTML con los mismos estilos
 ```
 src/
 ├── types/
-│   └── index.ts              # Modelo de datos completo (Seccion, Tabla, Referencia, etc.)
+│   └── index.ts                 # Modelo de datos completo (Seccion, Tabla, Referencia, etc.)
 │
 ├── store/
-│   └── documentStore.ts      # Store Zustand con todas las operaciones CRUD
+│   └── documentStore.ts         # Store Zustand: CRUD + estado de plantilla activa
+│
+├── templates/
+│   ├── index.ts                 # Catálogo de plantillas (PLANTILLAS)
+│   └── evaluacionProyectos.ts   # Estructura de la plantilla de Evaluación de Proyectos
 │
 ├── utils/
 │   ├── apa/
-│   │   └── formatCitation.ts # Formateador APA 7 (libro, artículo, web, norma)
-│   └── date.ts               # Fechas en español + generador de IDs
+│   │   └── formatCitation.ts    # Formateador APA 7 (libro, artículo, web, norma)
+│   └── date.ts                  # Fechas en español + generador de IDs
 │
 ├── components/
-│   ├── ui/                   # Componentes base reutilizables
+│   ├── ui/                      # Componentes base reutilizables
 │   │   ├── Button.tsx
 │   │   ├── Input.tsx
 │   │   ├── Select.tsx
 │   │   └── Textarea.tsx
-│   ├── MetadataForm.tsx      # Formulario de portada, integrantes e identificación
-│   ├── SeccionesEditor.tsx   # Editor de secciones con drag-and-drop
-│   ├── TablaEditor.tsx       # Editor de tablas con panel de diseño
-│   ├── ReferenciasEditor.tsx # Editor de referencias con vista previa APA 7
-│   ├── ConfigForm.tsx        # Configuración tipográfica y márgenes
-│   ├── VistaPrevia.tsx       # Vista previa HTML en tiempo real
-│   └── ExportButtons.tsx     # Botones de exportación DOCX / PDF
+│   ├── WelcomeScreen.tsx        # Pantalla de selección de plantilla
+│   ├── MetadataForm.tsx         # Formulario de portada, integrantes e identificación
+│   ├── SeccionesEditor.tsx      # Editor de secciones con drag-and-drop
+│   ├── TablaEditor.tsx          # Editor de tablas con panel de diseño
+│   ├── ReferenciasEditor.tsx    # Editor de referencias con vista previa APA 7
+│   ├── ConfigForm.tsx           # Configuración tipográfica y márgenes
+│   ├── VistaPrevia.tsx          # Vista previa HTML en tiempo real
+│   └── ExportButtons.tsx        # Botones de exportación DOCX / PDF
+│
+├── pages/
+│   ├── EditorPage.tsx           # Layout del editor (panel + vista previa)
+│   ├── LegalPage.tsx            # Layout base de las páginas legales
+│   ├── TerminosPage.tsx         # Términos y Condiciones
+│   └── PrivacidadPage.tsx       # Política de Privacidad
 │
 ├── export/
 │   ├── docx/
-│   │   └── generateDocx.ts   # Generador de Word (.docx)
+│   │   └── generateDocx.ts      # Generador de Word (.docx)
 │   └── pdf/
-│       └── generatePdf.tsx   # Generador de PDF
+│       └── generatePdf.tsx      # Generador de PDF
 │
-├── App.tsx                   # Layout principal (panel editor + panel vista previa)
-├── main.tsx                  # Entry point con polyfill de Buffer
-└── index.css                 # Estilos globales + Tailwind
+├── App.tsx                      # Enrutador (React Router)
+├── main.tsx                     # Entry point + polyfill de Buffer
+├── vite-env.d.ts                # Tipos de Vite (imports de CSS/SVG)
+└── index.css                    # Estilos globales + Tailwind
+
+vercel.json                      # Rewrite SPA para despliegue en Vercel
 ```
 
 ---
@@ -115,7 +169,8 @@ src/
 ### Pasos
 
 ```bash
-# 1. Clonar o descomprimir el proyecto
+# 1. Clonar el proyecto
+git clone https://github.com/BenjaMorenoo/Generador_informes.git
 cd Generador_informes
 
 # 2. Instalar dependencias
@@ -140,6 +195,9 @@ npm run build
 
 ## Guía de uso
 
+### 0. Elegir plantilla
+Al abrir la app, selecciona una plantilla en la pantalla de bienvenida (por ahora **DAS** o **Evaluación de Proyectos**). Esto carga la estructura inicial y abre el editor. El botón **+** del encabezado permite volver a empezar con otra plantilla en cualquier momento.
+
 ### 1. Portada
 Ve a la pestaña **Portada** y completa:
 - **Institución** — nombre de la universidad o escuela
@@ -148,8 +206,8 @@ Ve a la pestaña **Portada** y completa:
 - **Asignatura, Sección, Profesor, Ciudad, Fecha**
 - **Logo Institucional** — sube una imagen PNG/JPG; se mostrará centrada en la portada
 - **Integrantes** — haz clic en `+ Agregar` para añadir cada integrante con nombre y rol opcional
-- **Identificación del Documento** — versión, responsable de mantenimiento, fechas
-- **Historial de Revisiones** — agrega filas con fecha, número de revisión, autor y descripción del cambio
+- **Identificación del Documento** *(solo en plantillas que la usan, p. ej. DAS)* — versión, responsable de mantenimiento, fechas
+- **Historial de Revisiones** — agrega filas con fecha, número de revisión, autor y descripción del cambio; el botón **Diseño de la tabla** permite personalizar sus colores y bordes
 
 ### 2. Secciones
 Ve a la pestaña **Secciones**.
@@ -222,7 +280,12 @@ Todo el documento se representa en un único objeto JSON:
     institucion, logoUrl, ciudad, version,
     mantenidoPor, fechaUltimaRevision, fechaProximaRevision,
     aprobadoPor, fechaUltimaAprobacion,
-    historialRevisiones: [{ id, fecha, revision, autor, modificacion }]
+    historialRevisiones: [{ id, fecha, revision, autor, modificacion }],
+    estiloHistorial: {              // diseño de la tabla de historial
+      colorEncabezado, colorTextoEncabezado,
+      colorFilaImpar, colorFilaPar,
+      colorBorde, tiposBorde
+    }
   },
   config: {
     fuente, tamano, interlineado,
@@ -244,11 +307,12 @@ Todo el documento se representa en un único objeto JSON:
   referencias: [{
     id, tipo, autores, anio, titulo,
     fuente, url, editorial, doi, ciudad
-  }]
+  }],
+  mostrarIdentificacion?: boolean    // si la plantilla incluye la página de identificación (default: true)
 }
 ```
 
-El estado se persiste automáticamente en `localStorage` bajo la clave `das-documento`, por lo que no se pierde al recargar la página.
+El estado se persiste automáticamente en `localStorage` bajo la clave `das-documento` (incluye el documento, la plantilla seleccionada y la sesión activa), por lo que no se pierde al recargar la página.
 
 ---
 
@@ -258,7 +322,19 @@ El estado se persiste automáticamente en `localStorage` bajo la clave `das-docu
 - El índice general, el índice de figuras y el índice de tablas se generan **automáticamente** a partir de los datos; nunca se escriben a mano.
 - Cada capítulo (H1) comienza en una **página nueva** tanto en la vista previa como en los archivos exportados.
 - Las referencias se formatean según la norma **APA 7ª edición** con sangría francesa.
-- El estado del documento se persiste en `localStorage`; no se pierde al recargar la página.
+- Cada plantilla controla sus páginas preliminares mediante el flag `mostrarIdentificacion` del documento.
+- Al seleccionar una plantilla, su estructura se **clona** (deep clone) antes de cargarse en el editor, de modo que la plantilla original nunca se modifica.
+
+---
+
+## Despliegue
+
+El proyecto está preparado para **Vercel**:
+
+- `vercel.json` define un *rewrite* SPA (`/(.*) → /index.html`) para que las rutas (`/editor`, `/terminos`, `/privacidad`) funcionen al recargar o entrar directamente.
+- Comando de build: `npm run build` · Directorio de salida: `dist`.
+
+Cualquier hosting de estáticos sirve, siempre que redirija todas las rutas a `index.html`.
 
 ---
 
@@ -266,8 +342,12 @@ El estado se persiste automáticamente en `localStorage` bajo la clave `das-docu
 
 | Funcionalidad | Estado |
 |---|---|
+| Selección de plantilla (pantalla de bienvenida) | ✅ Estable |
+| Plantilla DAS | ✅ Estable |
+| Plantilla Evaluación de Proyectos | ✅ Estable |
+| Enrutamiento (React Router) | ✅ Estable |
 | Portada e identificación del documento | ✅ Estable |
-| Historial de revisiones | ✅ Estable |
+| Historial de revisiones con diseño personalizable | ✅ Estable |
 | Secciones H1 / H2 / H3 con drag-and-drop | ✅ Estable |
 | Vista previa en tiempo real | ✅ Estable |
 | Figuras con numeración automática | ✅ Estable |
@@ -276,6 +356,7 @@ El estado se persiste automáticamente en `localStorage` bajo la clave `das-docu
 | Exportación a DOCX | ✅ Funcional — revisar índice en Word con `F9` |
 | Exportación a PDF | ✅ Funcional — fuentes limitadas a las integradas en PDF |
 | Subida de logo institucional | ✅ Estable |
+| Páginas legales (Términos / Privacidad) | ✅ Estable |
 | Soporte multi-idioma | ❌ No disponible |
 | Colaboración en tiempo real | ❌ No disponible |
 | Guardado en la nube | ❌ No disponible (solo `localStorage`) |
@@ -291,14 +372,13 @@ El estado se persiste automáticamente en `localStorage` bajo la clave `das-docu
 | Formato enriquecido | Negrita, cursiva y negrita+cursiva en el contenido de secciones (`**texto**`, `*texto*`) con mini toolbar B / I sobre el editor |
 | Deshacer / Rehacer | Historial de acciones para recuperar secciones, tablas o campos eliminados |
 | Numeración de páginas en vista previa | Páginas numeradas visibles en el panel HTML, no solo en los archivos exportados |
-| Tabla de identificación personalizable | Mismo sistema de colores y bordes que el historial de revisiones |
 | Buscador de secciones | Filtro rápido por título en el panel de secciones |
 
 ### v0.3 — Mediano plazo
 
 | Feature | Descripción |
 |---|---|
-| Plantillas predefinidas | Esqueletos de documento para IEEE 1471, ISO/IEC 42010 y plantilla genérica |
+| Nuevas plantillas | Informe Técnico (IEEE), Laboratorio, Memoria de Título y En Blanco |
 | Múltiples documentos | Lista de proyectos guardados en `localStorage` con opción de cambiar entre ellos |
 | Bloques de código | Syntax highlighting dentro del contenido de secciones |
 | Glosario y abreviaciones | Sección fija generada automáticamente antes de las referencias |
@@ -320,5 +400,6 @@ El estado se persiste automáticamente en `localStorage` bajo la clave `das-docu
 
 - El índice en el DOCX requiere actualizarse manualmente en Word (`Ctrl+A` → `F9`).
 - El PDF usa únicamente fuentes integradas en el estándar PDF (Times Roman, Helvetica, Courier); no se renderizan fuentes como Calibri con su tipografía exacta.
+- Las tablas usan un único estilo por tabla; no es posible resaltar celdas individuales con un color distinto.
 - Las imágenes muy grandes pueden ralentizar la vista previa; se recomienda optimizarlas antes de subir.
 - No existe función de deshacer (undo) por acción; si se elimina una sección o tabla, no se puede recuperar excepto recargando la página antes de que `localStorage` se actualice.
