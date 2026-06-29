@@ -1,4 +1,5 @@
 import { DocumentoAcademico, PRESETS_TABLA } from '../types';
+import { documentoEvaluacion } from './evaluacionProyectos';
 
 export interface Plantilla {
   id: string;
@@ -59,6 +60,19 @@ export const PLANTILLAS: Plantilla[] = [
     colorClaro: '#eff6ff',
     colorTexto: '#1e40af',
     documento: documentoBase(),
+  },
+  {
+    id: 'evaluacion-proyectos',
+    nombre: 'Evaluación de Proyectos',
+    nombreCompleto: 'Informe de Evaluación de Proyectos de Software',
+    descripcion:
+      'Informe técnico de decisión de inversión para comparar y seleccionar proyectos de software. Trae la estructura de secciones lista (resumen ejecutivo, opciones de desarrollo, técnicas de análisis, comparación financiera VAN/TIR/PRI, conclusiones y referencias) para que completes el contenido.',
+    categoria: 'Evaluación de Proyectos',
+    disponible: true,
+    color: '#0f766e',
+    colorClaro: '#f0fdfa',
+    colorTexto: '#115e59',
+    documento: documentoEvaluacion,
   },
   {
     id: 'informe-tecnico',

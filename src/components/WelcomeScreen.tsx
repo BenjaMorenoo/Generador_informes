@@ -1,14 +1,15 @@
 import { useNavigate, Link } from 'react-router-dom';
-import { FileText, Layers, Cpu, FlaskConical, GraduationCap, Clock } from 'lucide-react';
+import { FileText, Layers, Cpu, FlaskConical, GraduationCap, Clock, Scale } from 'lucide-react';
 import { useDocumentStore } from '../store/documentStore';
 import { PLANTILLAS, Plantilla } from '../templates';
 
 const ICONOS: Record<string, React.ReactNode> = {
-  das:             <Layers size={28} />,
-  'informe-tecnico': <Cpu size={28} />,
-  laboratorio:     <FlaskConical size={28} />,
-  memoria:         <GraduationCap size={28} />,
-  'en-blanco':     <FileText size={28} />,
+  das:                   <Layers size={28} />,
+  'evaluacion-proyectos': <Scale size={28} />,
+  'informe-tecnico':     <Cpu size={28} />,
+  laboratorio:           <FlaskConical size={28} />,
+  memoria:               <GraduationCap size={28} />,
+  'en-blanco':           <FileText size={28} />,
 };
 
 function PlantillaCard({ plantilla }: { plantilla: Plantilla }) {

@@ -151,6 +151,7 @@ export function MetadataForm() {
       </section>
 
       {/* Identificación del documento */}
+      {documento.mostrarIdentificacion !== false && (
       <section>
         <h3 className="font-semibold text-gray-800 mb-3 border-b pb-1">Identificación del Documento</h3>
         <div className="space-y-3">
@@ -162,6 +163,7 @@ export function MetadataForm() {
           <Input label="Fecha última aprobación" type="date" {...register('fechaUltimaAprobacion')} />
         </div>
       </section>
+      )}
 
       {/* Historial de revisiones */}
       <section>

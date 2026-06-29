@@ -49,7 +49,7 @@ function renderTabla(tabla: Tabla, tablaNum: number, tamano: number): React.Reac
     : 'none';
 
   return (
-    <div style={{ margin: '0.5cm 0', textAlign: 'center' }}>
+    <div key={tabla.id} style={{ margin: '0.5cm 0', textAlign: 'center' }}>
       <p style={{ textAlign: 'center', marginBottom: '0.15cm', fontSize: `${tamano - 1}pt` }}>
         <strong>Tabla {tablaNum}.</strong> {descripcion}
       </p>
@@ -228,6 +228,7 @@ export function VistaPrevia() {
       </div>
 
       {/* ═══ IDENTIFICACIÓN DEL DOCUMENTO ═══ */}
+      {documento.mostrarIdentificacion !== false && (
       <div style={dividerStyle}>
         <h1 style={{ fontWeight: 'bold', textTransform: 'uppercase', fontSize: `${config.tamano + 2}pt`, marginBottom: '0.5cm' }}>
           Identificación del Documento
@@ -254,6 +255,7 @@ export function VistaPrevia() {
           </tbody>
         </table>
       </div>
+      )}
 
       {/* ═══ HISTORIAL DE REVISIONES ═══ */}
       {metadata.historialRevisiones.length > 0 && (

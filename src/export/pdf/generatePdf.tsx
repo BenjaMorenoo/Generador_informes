@@ -287,28 +287,30 @@ export async function generatePdf(doc: DocumentoAcademico): Promise<Blob> {
       </Page>
 
       {/* ── IDENTIFICACIÓN ── */}
-      <Page size="A4" style={styles.page}>
-        <View style={styles.divider} />
-        <Text style={styles.h1}>Identificación del Documento</Text>
-        <View style={{ borderWidth: 1, borderColor: '#d1d5db' }}>
-          {[
-            ['Identificación', `${metadata.proyecto} – ${metadata.entrega}`],
-            ['Proyecto', metadata.proyecto],
-            ['Versión', metadata.version],
-            ['Documento mantenido por', metadata.mantenidoPor],
-            ['Fecha última revisión', formatFechaEspanol(metadata.fechaUltimaRevision)],
-            ['Fecha próxima revisión', formatFechaEspanol(metadata.fechaProximaRevision)],
-            ['Documento aprobado por', metadata.aprobadoPor],
-            ['Fecha última aprobación', formatFechaEspanol(metadata.fechaUltimaAprobacion)],
-          ].map(([campo, valor], idx) => (
-            <View key={idx} style={idx % 2 === 0 ? styles.tableRowAlt0 : styles.tableRowAlt1}>
-              <Text style={styles.tableCellLabel}>{campo}</Text>
-              <Text style={styles.tableCellValue}>{valor}</Text>
-            </View>
-          ))}
-        </View>
-        <Text style={styles.pageNumber} render={({ pageNumber }) => `${pageNumber}`} fixed />
-      </Page>
+      {doc.mostrarIdentificacion !== false && (
+        <Page size="A4" style={styles.page}>
+          <View style={styles.divider} />
+          <Text style={styles.h1}>Identificación del Documento</Text>
+          <View style={{ borderWidth: 1, borderColor: '#d1d5db' }}>
+            {[
+              ['Identificación', `${metadata.proyecto} – ${metadata.entrega}`],
+              ['Proyecto', metadata.proyecto],
+              ['Versión', metadata.version],
+              ['Documento mantenido por', metadata.mantenidoPor],
+              ['Fecha última revisión', formatFechaEspanol(metadata.fechaUltimaRevision)],
+              ['Fecha próxima revisión', formatFechaEspanol(metadata.fechaProximaRevision)],
+              ['Documento aprobado por', metadata.aprobadoPor],
+              ['Fecha última aprobación', formatFechaEspanol(metadata.fechaUltimaAprobacion)],
+            ].map(([campo, valor], idx) => (
+              <View key={idx} style={idx % 2 === 0 ? styles.tableRowAlt0 : styles.tableRowAlt1}>
+                <Text style={styles.tableCellLabel}>{campo}</Text>
+                <Text style={styles.tableCellValue}>{valor}</Text>
+              </View>
+            ))}
+          </View>
+          <Text style={styles.pageNumber} render={({ pageNumber }) => `${pageNumber}`} fixed />
+        </Page>
+      )}
 
       {/* ── HISTORIAL ── */}
       {metadata.historialRevisiones.length > 0 && (() => {

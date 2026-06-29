@@ -164,6 +164,9 @@ export interface DocumentoAcademico {
   config: Config;
   secciones: Seccion[];
   referencias: Referencia[];
+  // Página preliminar de "Identificación del Documento" (propia del DAS).
+  // undefined o true = se muestra; false = se oculta.
+  mostrarIdentificacion?: boolean;
 }
 
 export type ActivePanel = 'metadata' | 'secciones' | 'referencias' | 'config';

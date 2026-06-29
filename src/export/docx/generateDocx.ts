@@ -441,13 +441,17 @@ export async function generateDocx(doc: DocumentoAcademico): Promise<Blob> {
         },
         children: [
           ...coverChildren,
-          new Paragraph({
-            text: 'Identificación del Documento',
-            heading: HeadingLevel.HEADING_1,
-            spacing: { before: 400, after: 400 },
-          }),
-          identTable,
-          new Paragraph({ children: [new PageBreak()] }),
+          ...(doc.mostrarIdentificacion !== false
+            ? [
+                new Paragraph({
+                  text: 'Identificación del Documento',
+                  heading: HeadingLevel.HEADING_1,
+                  spacing: { before: 400, after: 400 },
+                }),
+                identTable,
+                new Paragraph({ children: [new PageBreak()] }),
+              ]
+            : []),
           ...(historialTable
             ? [
                 new Paragraph({

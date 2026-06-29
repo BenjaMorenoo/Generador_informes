@@ -115,7 +115,13 @@ export const useDocumentStore = create<DocumentStore>()(
       setActivePanel: (panel) => set({ activePanel: panel }),
 
       iniciarDocumento: (plantillaId, documento) =>
-        set({ documentoIniciado: true, plantillaId, documento, activePanel: 'metadata' }),
+        set({
+          documentoIniciado: true,
+          plantillaId,
+          // Clon profundo para no mutar el objeto compartido de la plantilla
+          documento: structuredClone(documento),
+          activePanel: 'metadata',
+        }),
 
       volverInicio: () => set({ documentoIniciado: false }),
 
